@@ -3,19 +3,39 @@ using UnityEngine;
 public class CameraController : MonoBehaviour
 {
     GameObject player;
-    Vector3 offset;
+    Vector3 topDownOffset;
+    Vector3 driverSeatOffset;
+    bool isTopDown = true;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        //player = GameObject.Find("Car");
         player = GameObject.FindWithTag("Player");
-        offset = transform.position - player.transform.position;
+        // กำหนด offset สำหรับแต่ละมุมมอง (ปรับค่าได้ตามต้องการ)
+        topDownOffset = new Vector3(0, 5, -8);         // มุมมองด้านบนหลังรถ
+        driverSeatOffset = new Vector3(0, 1.2f, 0.5f); // มุมมองที่นั่งคนขับ
     }
 
-    // Update is called once per frame
+    void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.F))
+        {
+            isTopDown = !isTopDown;
+        }
+    }
+
     void LateUpdate()
     {
-        transform.position = player.transform.position + offset;
+        if (player == null) return;
+
+        if (isTopDown)
+        {
+            transform.position = player.transform.position + topDownOffset;
+            transform.LookAt(player.transform.position + Vector3.up * 1.5f);
+        }
+        else
+        {
+            transform.position = player.transform.TransformPoint(driverSeatOffset);
+            transform.rotation = player.transform.rotation;
+        }
     }
 }
